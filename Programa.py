@@ -4,12 +4,29 @@ import tkinter as tk
 from tkinter import messagebox
 
 atividades = []
+
+
+def carregar_atividades():
+    try:
+        df = pd.read_csv("atividades.csv")
+        global atividades
+        atividades = df.to_dict(orient="records")
+    except FileNotFoundError:
+        pass
+
+
+def salvar_atividades():
+    df = pd.DataFrame(atividades)
+    df.to_csv("atividades.csv", index=False)
+
+
 def cadastrar_atividade():
     atividade = entry_atividade.get()
     data = entry_data.get()
     if atividade and data:
         id_atividade = len(atividades) + 1
         atividades.append({"ID": id_atividade, "Atividade": atividade, "Data": data})
+        salvar_atividades()
         messagebox.showinfo("Sucesso", "Atividade cadastrada com sucesso!")
         entry_atividade.delete(0, tk.END)
         entry_data.delete(0, tk.END)
@@ -77,5 +94,7 @@ btn_exportar_csv.pack()
 
 btn_exportar_excel = tk.Button(root, text="Exportar para Excel", command=exportar_para_excel)
 btn_exportar_excel.pack()
+
+carregar_atividades()  # Carrega as atividades do arquivo ao iniciar o programa
 
 root.mainloop()
